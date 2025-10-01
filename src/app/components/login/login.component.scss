@@ -1,0 +1,198 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.background-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  .shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    
+    &.shape-1 {
+      width: 300px;
+      height: 300px;
+      top: -100px;
+      left: -100px;
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    &.shape-2 {
+      width: 200px;
+      height: 200px;
+      bottom: -50px;
+      right: 20%;
+      animation: float 8s ease-in-out infinite 2s;
+    }
+    
+    &.shape-3 {
+      width: 150px;
+      height: 150px;
+      top: 20%;
+      right: -50px;
+      animation: float 7s ease-in-out infinite 1s;
+    }
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+.login-card {
+  z-index: 1;
+  width: 100%;
+  max-width: 450px;
+  padding: 20px;
+  
+  .card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-5px);
+    }
+  }
+  
+  .card-header {
+    text-align: center;
+    padding: 30px 20px 20px;
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      
+      .logo-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+        color: #667eea;
+      }
+      
+      h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+    
+    .subtitle {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+  
+  .form {
+    padding: 20px 0;
+    
+    .full-width {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    
+    .submit-button {
+      width: 100%;
+      height: 50px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 25px;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      
+      mat-icon {
+        margin-right: 8px;
+      }
+      
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+// Estilização das tabs do Material
+::ng-deep {
+  .mat-tab-group {
+    .mat-tab-header {
+      border-bottom: none;
+    }
+    
+    .mat-tab-label {
+      min-width: 0;
+      padding: 0 24px;
+      opacity: 0.7;
+      font-weight: 500;
+      
+      &.mat-tab-label-active {
+        opacity: 1;
+      }
+    }
+    
+    .mat-ink-bar {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      height: 3px;
+    }
+  }
+  
+  .mat-form-field {
+    .mat-form-field-outline {
+      color: rgba(0, 0, 0, 0.1);
+    }
+    
+    &.mat-form-field-appearance-outline.mat-focused {
+      .mat-form-field-outline-thick {
+        color: #667eea;
+      }
+      
+      .mat-form-field-label {
+        color: #667eea;
+      }
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 480px) {
+  .login-card {
+    padding: 10px;
+    
+    .card-header {
+      .logo {
+        flex-direction: column;
+        gap: 5px;
+        
+        h1 {
+          font-size: 24px;
+        }
+      }
+    }
+  }
+}
