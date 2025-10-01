@@ -1,0 +1,40 @@
+<mat-nav-list class="sidenav-container">
+  <!-- Logo -->
+  <div class="sidenav-header">
+    <div class="logo">
+      <mat-icon class="logo-icon">work</mat-icon>
+      <span class="app-title">PortfolioATS</span>
+    </div>
+    <button 
+      mat-icon-button 
+      class="close-button"
+      (click)="closeSidenav.emit()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Menu Items -->
+  <a 
+    mat-list-item 
+    *ngFor="let item of menuItems"
+    [class.active]="isActiveRoute(item.path)"
+    (click)="onNavigate(item.path)"
+    class="menu-item">
+    <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
+    <span class="menu-label">{{ item.label }}</span>
+  </a>
+
+  <div class="spacer"></div>
+
+  <!-- Logout -->
+  <mat-divider></mat-divider>
+  <a 
+    mat-list-item 
+    (click)="onLogout()"
+    class="logout-item">
+    <mat-icon class="menu-icon">logout</mat-icon>
+    <span class="menu-label">Sair</span>
+  </a>
+</mat-nav-list>

@@ -1,0 +1,15 @@
+<div class="layout-container">
+  <app-header (toggleSidenav)="onToggleSidenav()"></app-header>
+  
+  <mat-drawer-container class="sidenav-container" autosize>
+    <mat-drawer #sidenav mode="over" [opened]="sidenavOpened">
+      <app-sidenav (closeSidenav)="onCloseSidenav()"></app-sidenav>
+    </mat-drawer>
+    
+    <mat-drawer-content class="main-content">
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>

@@ -1,0 +1,43 @@
+<mat-toolbar color="primary" class="header-toolbar">
+  <div class="header-content">
+    <!-- Botão menu mobile -->
+    <button 
+      mat-icon-button 
+      class="menu-button"
+      (click)="onToggleSidenav()">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <!-- Logo e título -->
+    <div class="logo-section">
+      <mat-icon class="logo-icon">rocket_launch</mat-icon>
+      <span class="app-title">PortfolioATS</span>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- User menu -->
+    <div class="user-section">
+      <button 
+        mat-icon-button 
+        [matMenuTriggerFor]="userMenu"
+        class="user-button">
+        <div class="user-avatar">
+          {{ getUserInitials() }}
+        </div>
+      </button>
+
+      <mat-menu #userMenu="matMenu" class="user-menu">
+        <div class="user-info">
+          <div class="user-name">{{ currentUser?.fullName }}</div>
+          <div class="user-email">{{ currentUser?.email }}</div>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="onLogout()">
+          <mat-icon>logout</mat-icon>
+          <span>Sair</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>

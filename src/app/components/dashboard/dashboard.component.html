@@ -1,23 +1,193 @@
 <div class="dashboard-container">
-  <h1>Dashboard PortfolioATS</h1>
-  <p>Esta é uma versão temporária do dashboard.</p>
-  <p>Em breve implementaremos o dashboard completo com métricas e gráficos.</p>
-  
-  <div class="info-cards">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Bem-vindo ao PortfolioATS</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>Seu sistema de gerenciamento de portfólio profissional.</p>
-        <p>Em breve você poderá:</p>
-        <ul>
-          <li>Visualizar métricas do seu perfil</li>
-          <li>Gerenciar experiências profissionais</li>
-          <li>Adicionar habilidades e certificações</li>
-          <li>Acompanhar seu score ATS</li>
-        </ul>
-      </mat-card-content>
-    </mat-card>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Carregando dashboard...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <h3>Erro ao carregar dashboard</h3>
+    <p>Não foi possível carregar os dados do dashboard.</p>
+    <button mat-raised-button color="primary" (click)="loadDashboard()">
+      <mat-icon>refresh</mat-icon>
+      Tentar Novamente
+    </button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && !error" class="dashboard-content">
+    
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <div class="welcome-section">
+        <h1 class="welcome-title">
+          <mat-icon class="rocket-icon">rocket_launch</mat-icon>
+          Meu Dashboard
+        </h1>
+        <div class="user-greeting">
+          <h2>👋 Olá, {{ getCurrentUser()?.fullName }}!</h2>
+          <p *ngIf="dashboardData.profileSummary.professionalTitle || dashboardData.profileSummary.location" 
+             class="user-info">
+            {{ dashboardData.profileSummary.professionalTitle }}
+            <span *ngIf="dashboardData.profileSummary.location">• {{ dashboardData.profileSummary.location }}</span>
+          </p>
+          <p *ngIf="!dashboardData.profileSummary.professionalTitle && !dashboardData.profileSummary.location" 
+             class="user-info">
+            Complete seu perfil para personalizar esta mensagem
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress and Score Cards -->
+    <div class="metrics-row">
+      <!-- Progress Card -->
+      <mat-card class="metric-card progress-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>trending_up</mat-icon>
+            Progresso do Perfil
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="progress-container">
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="dashboardData.profileSummary.profileCompletion"
+              [color]="getProgressColor(dashboardData.profileSummary.profileCompletion)">
+            </mat-progress-bar>
+            <div class="progress-text">
+              <span class="percentage">{{ dashboardData.profileSummary.profileCompletion }}%</span>
+              <span class="label">Completo</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- ATS Score Card -->
+      <mat-card class="metric-card score-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>score</mat-icon>
+            Score ATS
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="score-container">
+            <div class="score-circle" [style.background]="'conic-gradient(' + getAtsScoreColor(dashboardData.atsScore.score) + ' ' + (dashboardData.atsScore.score * 3.6) + 'deg, #e0e0e0 0deg)'">
+              <span class="score-value">{{ dashboardData.atsScore.score }}</span>
+              <span class="score-max">/100</span>
+            </div>
+            <div class="score-info">
+              <mat-icon class="level-icon">{{ getLevelIcon(dashboardData.atsScore.level) }}</mat-icon>
+              <span class="level-text">{{ dashboardData.atsScore.level }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="dashboard-grid">
+      
+      <!-- Statistics Card -->
+      <mat-card class="grid-card statistics-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>analytics</mat-icon>
+            Estatísticas
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stats-list">
+            <div class="stat-item">
+              <mat-icon class="stat-icon">work</mat-icon>
+              <div class="stat-info">
+                <span class="stat-value">{{ dashboardData.statistics.totalExperiences }}</span>
+                <span class="stat-label">Experiências</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <mat-icon class="stat-icon">code</mat-icon>
+              <div class="stat-info">
+                <span class="stat-value">{{ dashboardData.statistics.totalSkills }}</span>
+                <span class="stat-label">Habilidades</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <mat-icon class="stat-icon">school</mat-icon>
+              <div class="stat-info">
+                <span class="stat-value">{{ dashboardData.statistics.totalEducations }}</span>
+                <span class="stat-label">Formações</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <mat-icon class="stat-icon">card_membership</mat-icon>
+              <div class="stat-info">
+                <span class="stat-value">{{ dashboardData.statistics.totalCertifications }}</span>
+                <span class="stat-label">Certificados</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <mat-icon class="stat-icon">language</mat-icon>
+              <div class="stat-info">
+                <span class="stat-value">{{ dashboardData.statistics.totalLanguages }}</span>
+                <span class="stat-label">Idiomas</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Quick Actions Card -->
+      <mat-card class="grid-card actions-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>flash_on</mat-icon>
+            Ações Rápidas
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="actions-list">
+            <button 
+              *ngFor="let action of dashboardData.quickActions" 
+              mat-raised-button 
+              class="action-button"
+              [color]="action.priority > 1 ? 'primary' : 'accent'">
+              <mat-icon>{{ action.icon }}</mat-icon>
+              {{ action.title }}
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Recent Activity Card -->
+      <mat-card class="grid-card activity-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>history</mat-icon>
+            Atividade Recente
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="activity-list">
+            <div *ngFor="let activity of dashboardData.recentActivity.activities" class="activity-item">
+              <mat-icon class="activity-icon">fiber_manual_record</mat-icon>
+              <div class="activity-content">
+                <span class="activity-desc">{{ activity.description }}</span>
+                <span class="activity-date">{{ activity.date | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            </div>
+            <div *ngIf="dashboardData.recentActivity.activities.length === 0" class="no-activities">
+              <mat-icon>info</mat-icon>
+              <span>Nenhuma atividade recente</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
   </div>
 </div>

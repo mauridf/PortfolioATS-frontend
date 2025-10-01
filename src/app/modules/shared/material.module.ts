@@ -11,6 +11,11 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [],
@@ -24,7 +29,12 @@ import { MatIconModule } from '@angular/material/icon';
     MatProgressBarModule,
     MatSnackBarModule,
     MatTabsModule,
-    MatIconModule
+    MatIconModule,
+    MatSidenavModule,
+    MatListModule,
+    MatMenuModule,
+    MatDividerModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     MatToolbarModule,
@@ -35,7 +45,12 @@ import { MatIconModule } from '@angular/material/icon';
     MatProgressBarModule,
     MatSnackBarModule,
     MatTabsModule,
-    MatIconModule
+    MatIconModule,
+    MatSidenavModule,
+    MatListModule,
+    MatMenuModule,
+    MatDividerModule,
+    MatProgressSpinnerModule
   ]
 })
 export class MaterialModule { }

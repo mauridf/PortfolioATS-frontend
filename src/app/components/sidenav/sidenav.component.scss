@@ -1,0 +1,105 @@
+.sidenav-container {
+  width: 280px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #2c3e50 0%, #3498db 100%);
+  
+  .sidenav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 16px;
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      .logo-icon {
+        color: #fff;
+        font-size: 24px;
+      }
+      
+      .app-title {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
+    
+    .close-button {
+      color: #fff;
+      
+      @media (min-width: 768px) {
+        display: none;
+      }
+    }
+  }
+  
+  .menu-item {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transform: translateX(4px);
+    }
+    
+    &.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      
+      .menu-icon {
+        color: #4CAF50;
+      }
+    }
+    
+    .menu-icon {
+      margin-right: 16px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .menu-label {
+      font-weight: 500;
+    }
+  }
+  
+  .spacer {
+    flex: 1;
+  }
+  
+  .logout-item {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: rgba(244, 67, 54, 0.2);
+      color: #fff;
+    }
+    
+    .menu-icon {
+      margin-right: 16px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+}
+
+// Animações
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.sidenav-container {
+  animation: slideIn 0.3s ease-out;
+}
