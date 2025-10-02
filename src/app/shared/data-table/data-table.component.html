@@ -1,0 +1,73 @@
+<div class="data-table-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Carregando dados...</span>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && (!data || data.length === 0)" class="empty-state">
+    <mat-icon class="empty-icon">inbox</mat-icon>
+    <h3>Nenhum registro encontrado</h3>
+    <p>Não há dados para exibir no momento.</p>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading && data && data.length > 0" class="table-wrapper">
+    <table mat-table [dataSource]="paginatedData" class="data-table">
+      
+      <!-- Dynamic Columns -->
+      <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
+        <th mat-header-cell *matHeaderCellDef [style.width]="column.width">
+          {{ column.header }}
+        </th>
+        <td mat-cell *matCellDef="let row" (click)="onRowClick(row)">
+          <ng-container *ngIf="customCellTemplates[column.key]; else defaultCell">
+            <ng-container *ngTemplateOutlet="customCellTemplates[column.key]; context: { $implicit: row }"></ng-container>
+          </ng-container>
+          <ng-template #defaultCell>
+            {{ formatValue(row[column.key], column.type) }}
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions" *ngIf="showActions">
+        <th mat-header-cell *matHeaderCellDef class="actions-header">Ações</th>
+        <td mat-cell *matCellDef="let row" class="actions-cell">
+          <button 
+            mat-icon-button 
+            color="primary" 
+            (click)="onEdit(row)"
+            class="action-button"
+            matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button 
+            mat-icon-button 
+            color="warn" 
+            (click)="onDelete(row)"
+            class="action-button"
+            matTooltip="Excluir">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+          class="table-row"></tr>
+    </table>
+
+    <!-- Pagination -->
+    <mat-paginator
+      [length]="data.length"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      (page)="onPageChange($event)"
+      aria-label="Select page"
+      class="table-paginator">
+    </mat-paginator>
+  </div>
+</div>

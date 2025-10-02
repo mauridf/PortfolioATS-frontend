@@ -1,0 +1,249 @@
+.experiences-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 32px;
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .title-section {
+      .page-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 2rem;
+        font-weight: 700;
+        
+        .title-icon {
+          color: #667eea;
+          font-size: 2rem;
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+      
+      .page-subtitle {
+        color: #7f8c8d;
+        margin: 0;
+        font-size: 1.1rem;
+      }
+    }
+    
+    .add-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+      }
+    }
+  }
+}
+
+.filters-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-field {
+    flex: 1;
+    max-width: 400px;
+    
+    @media (max-width: 768px) {
+      max-width: none;
+    }
+  }
+  
+  .stats-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    min-width: 120px;
+    
+    .stat-count {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+  }
+}
+
+.experiences-table {
+  margin-bottom: 24px;
+}
+
+// Custom badge for employment type
+.employment-type-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Modal Styles
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 0;
+  
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: #2c3e50;
+    
+    mat-icon {
+      color: #667eea;
+    }
+  }
+  
+  .close-button {
+    color: #7f8c8d;
+  }
+}
+
+.experience-form {
+  padding: 20px 0;
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .form-field {
+    width: 100%;
+    
+    &.disabled {
+      opacity: 0.6;
+    }
+  }
+  
+  .checkbox-field {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+  }
+  
+  .full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  
+  .skills-section {
+    margin-top: 24px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    
+    .section-label {
+      display: block;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+    
+    .section-hint {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+  }
+}
+
+// Dialog actions
+mat-dialog-actions {
+  padding: 16px 24px 24px;
+  
+  .cancel-button {
+    margin-right: 12px;
+  }
+  
+  .save-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+// Animações
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.experiences-container > * {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.page-header {
+  animation-delay: 0.1s;
+}
+
+.filters-section {
+  animation-delay: 0.2s;
+}
+
+.experiences-table {
+  animation-delay: 0.3s;
+}
+
+.employment-type-badge.unknown {
+  background: #bdc3c7 !important;
+  color: #2c3e50;
+}

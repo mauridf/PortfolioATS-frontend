@@ -1,0 +1,112 @@
+.data-table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  
+  .loading-state, .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    
+    .empty-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: #bdc3c7;
+      margin-bottom: 16px;
+    }
+    
+    h3 {
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+    
+    p {
+      color: #7f8c8d;
+      margin: 0;
+    }
+  }
+  
+  .table-wrapper {
+    .data-table {
+      width: 100%;
+      
+      .mat-header-cell {
+        background: #f8f9fa;
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid #e9ecef;
+      }
+      
+      .mat-cell {
+        color: #495057;
+        font-size: 14px;
+        border-bottom: 1px solid #e9ecef;
+        padding: 16px 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        
+        &:hover {
+          background: #f8f9fa;
+        }
+      }
+      
+      .actions-header {
+        text-align: center;
+        width: 120px;
+      }
+      
+      .actions-cell {
+        text-align: center;
+        width: 120px;
+        
+        .action-button {
+          margin: 0 4px;
+          transition: transform 0.2s ease;
+          
+          &:hover {
+            transform: scale(1.1);
+          }
+        }
+      }
+      
+      .table-row {
+        &:hover {
+          background: #f8f9fa;
+        }
+        
+        &:last-child {
+          .mat-cell {
+            border-bottom: none;
+          }
+        }
+      }
+    }
+    
+    .table-paginator {
+      border-top: 1px solid #e9ecef;
+      background: #f8f9fa;
+    }
+  }
+}
+
+// Animações
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.data-table-container {
+  animation: fadeIn 0.4s ease-out;
+}

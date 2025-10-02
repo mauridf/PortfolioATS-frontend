@@ -5,18 +5,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 
-// Angular Material
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
+// Modules
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+import { SharedModule } from './modules/shared/shared.module';
+import { ExperiencesModule } from './modules/experiences/experiences.module';
 import { MaterialModule } from './modules/shared/material.module';
 
 // Components
+import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -28,6 +24,7 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [
+    // Apenas componentes globais do App
     AppComponent,
     LoginComponent,
     DashboardComponent,
@@ -41,21 +38,19 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
     HttpClientModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
-    DatePipe,
-    MaterialModule,
-    // Material modules adicionais
-    MatSidenavModule,
-    MatListModule,
-    MatMenuModule,
-    MatDividerModule,
-    MatProgressSpinnerModule
+    
+    // Feature Modules
+    SharedModule,
+    ExperiencesModule,
+    MaterialModule
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    DatePipe
   ],
   bootstrap: [AppComponent]
 })

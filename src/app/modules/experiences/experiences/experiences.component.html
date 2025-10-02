@@ -1,0 +1,186 @@
+<div class="experiences-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon class="title-icon">work</mat-icon>
+          Experiências Profissionais
+        </h1>
+        <p class="page-subtitle">Gerencie suas experiências profissionais</p>
+      </div>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="openCreateModal(experienceModal)"
+        class="add-button">
+        <mat-icon>add</mat-icon>
+        Nova Experiência
+      </button>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="filters-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Pesquisar experiências</mat-label>
+      <input 
+        matInput 
+        [ngModel]="searchTerm"
+        (ngModelChange)="onSearchChange($event)"
+        placeholder="Digite para pesquisar...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    
+    <div class="stats-badge" *ngIf="!loading">
+      <span class="stat-count">{{ filteredExperiences?.length || 0 }}</span>
+      <span class="stat-label">experiência(s)</span>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns"
+    [data]="filteredExperiences || []"
+    [loading]="loading"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [totalItems]="(filteredExperiences || []).length"
+    (edit)="openEditModal(experienceModal, $event)"
+    (delete)="confirmDelete($event)"
+    class="experiences-table">
+    
+    <!-- Custom template for employment type -->
+    <ng-container *ngFor="let column of columns">
+      <ng-container *ngIf="column.key === 'employmentType'" [ngTemplateOutlet]="employmentTypeCell"></ng-container>
+    </ng-container>
+  </app-data-table>
+
+  <!-- Custom Cell Templates -->
+  <ng-template #employmentTypeCell let-experience>
+    <span 
+      *ngIf="experience?.employmentType"
+      class="employment-type-badge" 
+      [style.background]="getEmploymentTypeColor(experience.employmentType)">
+      {{ experience.employmentType }}
+    </span>
+    <span *ngIf="!experience?.employmentType" class="employment-type-badge unknown">
+      Não informado
+    </span>
+  </ng-template>
+
+  <!-- Experience Modal -->
+  <ng-template #experienceModal>
+    <div class="modal-header">
+      <h2 mat-dialog-title>
+        <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Editar' : 'Nova' }} Experiência
+      </h2>
+      <button mat-icon-button mat-dialog-close class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <mat-dialog-content>
+      <form [formGroup]="experienceForm" class="experience-form">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Empresa *</mat-label>
+            <input matInput formControlName="company" placeholder="Nome da empresa">
+            <mat-icon matSuffix>business</mat-icon>
+            <mat-error *ngIf="experienceForm.get('company')?.hasError('required')">
+              Empresa é obrigatória
+            </mat-error>
+            <mat-error *ngIf="experienceForm.get('company')?.hasError('minlength')">
+              Mínimo 2 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Cargo *</mat-label>
+            <input matInput formControlName="position" placeholder="Seu cargo na empresa">
+            <mat-icon matSuffix>badge</mat-icon>
+            <mat-error *ngIf="experienceForm.get('position')?.hasError('required')">
+              Cargo é obrigatório
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Tipo de Emprego *</mat-label>
+            <mat-select formControlName="employmentType">
+              <mat-option *ngFor="let type of employmentTypes" [value]="type">
+                {{ type }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="experienceForm.get('employmentType')?.hasError('required')">
+              Tipo de emprego é obrigatório
+            </mat-error>
+          </mat-form-field>
+
+          <div class="checkbox-field">
+            <mat-checkbox formControlName="isCurrent" (change)="onIsCurrentChange()">
+              Trabalho Atual
+            </mat-checkbox>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Data de Início *</mat-label>
+            <input matInput formControlName="startDate" type="date">
+            <mat-error *ngIf="experienceForm.get('startDate')?.hasError('required')">
+              Data de início é obrigatória
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field" [class.disabled]="experienceForm.get('isCurrent')?.value">
+            <mat-label>Data de Término</mat-label>
+            <input 
+              matInput 
+              formControlName="endDate" 
+              type="date"
+              [disabled]="experienceForm.get('isCurrent')?.value">
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descrição *</mat-label>
+          <textarea 
+            matInput 
+            formControlName="description" 
+            placeholder="Descreva suas responsabilidades e conquistas..."
+            rows="4">
+          </textarea>
+          <mat-error *ngIf="experienceForm.get('description')?.hasError('required')">
+            Descrição é obrigatória
+          </mat-error>
+          <mat-error *ngIf="experienceForm.get('description')?.hasError('minlength')">
+            Mínimo 10 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Skills section (para implementação futura) -->
+        <div class="skills-section">
+          <label class="section-label">Habilidades Utilizadas</label>
+          <p class="section-hint">Em breve: selecione as habilidades relacionadas a esta experiência</p>
+        </div>
+      </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="saveExperience()"
+        [disabled]="!experienceForm.valid"
+        class="save-button">
+        <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Atualizar' : 'Criar' }} Experiência
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
+</div>
