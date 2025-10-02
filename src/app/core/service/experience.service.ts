@@ -30,31 +30,31 @@ export class ExperienceService {
   }
 
   getCurrentExperiences(): Observable<Experience[]> {
-    return this.http.get<Experience[]>(`${this.apiUrl}/Experience/current`, {
+    return this.http.get<Experience[]>(`${this.apiUrl}/Experiences/current`, {
       headers: this.getHeaders()
     });
   }
 
   getExperienceById(id: string): Observable<Experience> {
-    return this.http.get<Experience>(`${this.apiUrl}/Experience/${id}`, {
+    return this.http.get<Experience>(`${this.apiUrl}/Experiences/${id}`, {
       headers: this.getHeaders()
     });
   }
 
   createExperience(experience: ExperienceRequest): Observable<Experience> {
-    return this.http.post<Experience>(`${this.apiUrl}/Experience`, experience, {
+    return this.http.post<Experience>(`${this.apiUrl}/Experiences`, experience, {
       headers: this.getHeaders()
     });
   }
 
   updateExperience(id: string, experience: ExperienceRequest): Observable<any> {
-    return this.http.put(`${this.apiUrl}/Experience/${id}`, experience, {
+    return this.http.put(`${this.apiUrl}/Experiences/${id}`, experience, {
       headers: this.getHeaders()
     });
   }
 
   deleteExperience(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/Experience/${id}`, {
+    return this.http.delete(`${this.apiUrl}/Experiences/${id}`, {
       headers: this.getHeaders()
     });
   }

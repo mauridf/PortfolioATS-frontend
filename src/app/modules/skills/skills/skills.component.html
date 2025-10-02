@@ -1,0 +1,231 @@
+<div class="skills-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon class="title-icon">code</mat-icon>
+          Habilidades Técnicas
+        </h1>
+        <p class="page-subtitle">Gerencie suas habilidades e competências</p>
+      </div>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="openCreateModal(skillModal)"
+        class="add-button">
+        <mat-icon>add</mat-icon>
+        Nova Habilidade
+      </button>
+    </div>
+  </div>
+
+  <!-- Category Stats -->
+  <div class="category-stats" *ngIf="getCategoryStats().length > 0">
+    <h3 class="stats-title">Distribuição por Categoria</h3>
+    <div class="stats-grid">
+      <div 
+        *ngFor="let stat of getCategoryStats()" 
+        class="stat-item"
+        (click)="onCategoryChange(stat.category)"
+        [class.active]="selectedCategory === stat.category">
+        <span class="stat-category">{{ stat.category }}</span>
+        <span class="stat-count">{{ stat.count }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Pesquisar habilidades</mat-label>
+        <input 
+          matInput 
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Digite para pesquisar...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="category-field">
+        <mat-label>Filtrar por categoria</mat-label>
+        <mat-select 
+          [value]="selectedCategory" 
+          (selectionChange)="onCategoryChange($event.value)">
+          <mat-option value="all">Todas as categorias</mat-option>
+          <mat-option 
+            *ngFor="let category of categories" 
+            [value]="category">
+            {{ category }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
+    <div class="stats-badge" *ngIf="!loading">
+      <span class="stat-count">{{ filteredSkills.length }}</span>
+      <span class="stat-label">habilidade(s)</span>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns"
+    [data]="filteredSkills"
+    [loading]="loading"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [totalItems]="filteredSkills.length"
+    (edit)="openEditModal(skillModal, $event)"
+    (delete)="confirmDelete($event)"
+    class="skills-table">
+    
+    <!-- Custom template for category -->
+    <ng-container *ngFor="let column of columns">
+      <ng-container *ngIf="column.key === 'category'" [ngTemplateOutlet]="categoryCell"></ng-container>
+      <ng-container *ngIf="column.key === 'level'" [ngTemplateOutlet]="levelCell"></ng-container>
+    </ng-container>
+  </app-data-table>
+
+  <!-- Custom Cell Templates -->
+  <ng-template #categoryCell let-skill>
+    <span 
+      *ngIf="skill?.category"
+      class="category-badge" 
+      [style.background]="getCategoryColor(skill.category)">
+      {{ skill.category }}
+    </span>
+    <span *ngIf="!skill?.category" class="category-badge unknown">
+      Não informado
+    </span>
+  </ng-template>
+
+  <ng-template #levelCell let-skill>
+    <div class="level-container">
+      <mat-icon 
+        *ngIf="skill?.level"
+        class="level-icon"
+        [style.color]="getLevelColor(skill.level)">
+        {{ getLevelIcon(skill.level) }}
+      </mat-icon>
+      <span 
+        *ngIf="skill?.level"
+        class="level-badge" 
+        [style.background]="getLevelColor(skill.level)">
+        {{ skill.level }}
+      </span>
+      <span *ngIf="!skill?.level" class="level-badge unknown">
+        Não informado
+      </span>
+    </div>
+  </ng-template>
+
+  <!-- Skill Modal -->
+  <ng-template #skillModal>
+    <div class="modal-header">
+      <h2 mat-dialog-title>
+        <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Editar' : 'Nova' }} Habilidade
+      </h2>
+      <button mat-icon-button mat-dialog-close class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <mat-dialog-content>
+      <form [formGroup]="skillForm" class="skill-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome da Habilidade *</mat-label>
+          <input 
+            matInput 
+            formControlName="name" 
+            placeholder="Ex: Angular, C#, SQL Server...">
+          <mat-icon matSuffix>code</mat-icon>
+          <mat-error *ngIf="skillForm.get('name')?.hasError('required')">
+            Nome da habilidade é obrigatório
+          </mat-error>
+          <mat-error *ngIf="skillForm.get('name')?.hasError('minlength')">
+            Mínimo 2 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Categoria *</mat-label>
+          <mat-select formControlName="category">
+            <mat-option *ngFor="let category of categories" [value]="category">
+              {{ category }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="skillForm.get('category')?.hasError('required')">
+            Categoria é obrigatória
+          </mat-error>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Nível *</mat-label>
+            <mat-select formControlName="level">
+              <mat-option *ngFor="let level of skillLevels" [value]="level">
+                {{ level }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="skillForm.get('level')?.hasError('required')">
+              Nível é obrigatório
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Anos de Experiência *</mat-label>
+            <mat-select formControlName="yearsOfExperience">
+              <mat-option *ngFor="let year of yearsOptions" [value]="year">
+                {{ year }} {{ year === 1 ? 'ano' : 'anos' }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="skillForm.get('yearsOfExperience')?.hasError('required')">
+              Anos de experiência são obrigatórios
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Preview da habilidade -->
+        <div class="skill-preview" *ngIf="skillForm.valid && skillForm.get('name')?.value">
+          <h4 class="preview-title">Preview:</h4>
+          <div class="preview-content">
+            <span 
+              *ngIf="skillForm.get('category')?.value"
+              class="category-badge preview-badge" 
+              [style.background]="getCategoryColor(skillForm.get('category')?.value)">
+              {{ skillForm.get('category')?.value }}
+            </span>
+            <span 
+              *ngIf="skillForm.get('level')?.value"
+              class="level-badge preview-badge" 
+              [style.background]="getLevelColor(skillForm.get('level')?.value)">
+              <mat-icon class="preview-icon">{{ getLevelIcon(skillForm.get('level')?.value) }}</mat-icon>
+              {{ skillForm.get('level')?.value }}
+            </span>
+            <span class="years-preview" *ngIf="skillForm.get('yearsOfExperience')?.value !== null">
+              {{ skillForm.get('yearsOfExperience')?.value }} 
+              {{ skillForm.get('yearsOfExperience')?.value === 1 ? 'ano' : 'anos' }} de experiência
+            </span>
+          </div>
+        </div>
+      </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="saveSkill()"
+        [disabled]="!skillForm.valid"
+        class="save-button">
+        <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Atualizar' : 'Criar' }} Habilidade
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
+</div>

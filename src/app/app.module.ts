@@ -9,6 +9,7 @@ import { DatePipe } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './modules/shared/shared.module';
 import { ExperiencesModule } from './modules/experiences/experiences.module';
+import { SkillsModule } from './modules/skills/skills.module';
 import { MaterialModule } from './modules/shared/material.module';
 
 // Components
@@ -44,6 +45,7 @@ import { ProfileComponent } from './modules/profile/profile/profile.component';
     // Feature Modules
     SharedModule,
     ExperiencesModule,
+    SkillsModule,
     MaterialModule
   ],
   providers: [

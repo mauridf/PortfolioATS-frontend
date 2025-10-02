@@ -1,0 +1,370 @@
+.skills-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 32px;
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .title-section {
+      .page-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 2rem;
+        font-weight: 700;
+        
+        .title-icon {
+          color: #667eea;
+          font-size: 2rem;
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+      
+      .page-subtitle {
+        color: #7f8c8d;
+        margin: 0;
+        font-size: 1.1rem;
+      }
+    }
+    
+    .add-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+      }
+    }
+  }
+}
+
+.category-stats {
+  margin-bottom: 24px;
+  
+  .stats-title {
+    color: #2c3e50;
+    margin-bottom: 16px;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      }
+      
+      &.active {
+        border-color: #667eea;
+        background: #f8f9ff;
+      }
+      
+      .stat-category {
+        font-weight: 500;
+        color: #2c3e50;
+      }
+      
+      .stat-count {
+        background: #667eea;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        min-width: 30px;
+        text-align: center;
+      }
+    }
+  }
+}
+
+.filters-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 24px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-group {
+    display: flex;
+    gap: 16px;
+    flex: 1;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+    
+    .search-field {
+      flex: 1;
+      min-width: 250px;
+    }
+    
+    .category-field {
+      min-width: 200px;
+    }
+  }
+  
+  .stats-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    min-width: 120px;
+    
+    .stat-count {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+  }
+}
+
+.skills-table {
+  margin-bottom: 24px;
+}
+
+// Badges customizados
+.category-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 16px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.level-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  .level-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  .level-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Modal Styles
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 0;
+  
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: #2c3e50;
+    
+    mat-icon {
+      color: #667eea;
+    }
+  }
+  
+  .close-button {
+    color: #7f8c8d;
+  }
+}
+
+.skill-form {
+  padding: 20px 0;
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .form-field, .full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  
+  .skill-preview {
+    margin-top: 24px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    
+    .preview-title {
+      color: #2c3e50;
+      margin-bottom: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    
+    .preview-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      
+      .preview-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        
+        .preview-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+        }
+      }
+      
+      .years-preview {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        font-style: italic;
+      }
+    }
+  }
+}
+
+// Dialog actions
+mat-dialog-actions {
+  padding: 16px 24px 24px;
+  
+  .cancel-button {
+    margin-right: 12px;
+  }
+  
+  .save-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+// Animações
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skills-container > * {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.category-stats {
+  animation-delay: 0.1s;
+}
+
+.filters-section {
+  animation-delay: 0.2s;
+}
+
+.skills-table {
+  animation-delay: 0.3s;
+}
+
+// Efeitos de hover
+.stat-item, .category-badge, .level-badge {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// Adicionar estas regras no final do arquivo
+
+.category-badge.unknown,
+.level-badge.unknown {
+  background: #bdc3c7 !important;
+  color: #2c3e50;
+}
+
+.level-badge.unknown {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: #2c3e50;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
