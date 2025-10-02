@@ -4,6 +4,7 @@ import { LoginComponent } from './components/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { ExperiencesComponent } from './modules/experiences/experiences/experiences.component';
+import { ProfileComponent } from './modules/profile/profile/profile.component';
 import { AuthGuard } from './core/guard/auth.guard';
 
 const routes: Routes = [
@@ -16,7 +17,7 @@ const routes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardComponent },
       // Aqui vamos adicionar outras rotas posteriormente
-      { path: 'profile', component: DashboardComponent }, // Temporário
+      { path: 'profile', component: ProfileComponent },
       { path: 'experiences', component: ExperiencesComponent },
       { path: 'skills', component: DashboardComponent }, // Temporário
       { path: 'education', component: DashboardComponent }, // Temporário

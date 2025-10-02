@@ -21,6 +21,7 @@ import { LayoutComponent } from './components/layout/layout.component';
 
 // Services and Interceptors
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { ProfileComponent } from './modules/profile/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
     DashboardComponent,
     HeaderComponent,
     SidenavComponent,
-    LayoutComponent
+    LayoutComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

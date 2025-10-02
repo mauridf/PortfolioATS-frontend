@@ -1,0 +1,317 @@
+<div class="profile-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Carregando perfil...</p>
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="!loading" class="profile-content">
+    
+    <!-- Header Section -->
+    <div class="profile-header">
+      <div class="header-content">
+        <div class="title-section">
+          <h1 class="page-title">
+            <mat-icon class="title-icon">person</mat-icon>
+            Meu Perfil
+          </h1>
+          <p class="page-subtitle">Gerencie suas informações profissionais</p>
+        </div>
+        
+        <div class="header-actions">
+          <button 
+            *ngIf="!editing"
+            mat-raised-button 
+            color="primary" 
+            (click)="toggleEdit()"
+            class="edit-button">
+            <mat-icon>edit</mat-icon>
+            Editar Perfil
+          </button>
+          
+          <div *ngIf="editing" class="edit-actions">
+            <button 
+              mat-button 
+              (click)="cancelEdit()"
+              class="cancel-button">
+              Cancelar
+            </button>
+            <button 
+              mat-raised-button 
+              color="primary" 
+              (click)="saveProfile()"
+              [disabled]="!profileForm.valid"
+              class="save-button">
+              <mat-icon>save</mat-icon>
+              Salvar Alterações
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Card -->
+    <mat-card class="progress-card">
+      <mat-card-content>
+        <div class="progress-content">
+          <div class="progress-info">
+            <h3 class="progress-title">Completude do Perfil</h3>
+            <p class="progress-message">{{ getCompletionMessage() }}</p>
+            <div class="missing-fields" *ngIf="missingFields.length > 0">
+              <p class="missing-title">Campos faltantes:</p>
+              <ul class="missing-list">
+                <li *ngFor="let field of missingFields">{{ field }}</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="progress-circle">
+            <div class="circle-container">
+              <div 
+                class="circle-progress" 
+                [style.background]="'conic-gradient(' + getProgressColor(profileCompleteness) + ' ' + (profileCompleteness * 3.6) + 'deg, #e0e0e0 0deg)'">
+                <span class="progress-value">{{ profileCompleteness }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Main Content Grid -->
+    <div class="profile-grid">
+      
+      <!-- Personal Information Card -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>account_circle</mat-icon>
+            Informações Pessoais
+          </mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <form [formGroup]="profileForm" class="profile-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Nome Completo *</mat-label>
+                <input 
+                  matInput 
+                  formControlName="fullName" 
+                  placeholder="Seu nome completo"
+                  [readonly]="!editing">
+                <mat-icon matSuffix>person</mat-icon>
+                <mat-error *ngIf="profileForm.get('fullName')?.hasError('required')">
+                  Nome é obrigatório
+                </mat-error>
+                <mat-error *ngIf="profileForm.get('fullName')?.hasError('minlength')">
+                  Mínimo 3 caracteres
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>E-mail</mat-label>
+                <input 
+                  matInput 
+                  formControlName="email" 
+                  placeholder="seu@email.com"
+                  readonly>
+                <mat-icon matSuffix>email</mat-icon>
+                <mat-hint>E-mail não pode ser alterado</mat-hint>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Telefone *</mat-label>
+                <input 
+                  matInput 
+                  formControlName="phone" 
+                  placeholder="(00) 00000-0000"
+                  [readonly]="!editing">
+                <mat-icon matSuffix>phone</mat-icon>
+                <mat-error *ngIf="profileForm.get('phone')?.hasError('required')">
+                  Telefone é obrigatório
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Localização *</mat-label>
+                <input 
+                  matInput 
+                  formControlName="location" 
+                  placeholder="Cidade, Estado"
+                  [readonly]="!editing">
+                <mat-icon matSuffix>location_on</mat-icon>
+                <mat-error *ngIf="profileForm.get('location')?.hasError('required')">
+                  Localização é obrigatória
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Resumo Profissional *</mat-label>
+              <textarea 
+                matInput 
+                formControlName="professionalSummary" 
+                placeholder="Descreva sua experiência, habilidades e objetivos profissionais..."
+                rows="5"
+                [readonly]="!editing">
+              </textarea>
+              <mat-hint>Mínimo 50 caracteres</mat-hint>
+              <mat-error *ngIf="profileForm.get('professionalSummary')?.hasError('required')">
+                Resumo profissional é obrigatório
+              </mat-error>
+              <mat-error *ngIf="profileForm.get('professionalSummary')?.hasError('minlength')">
+                Mínimo 50 caracteres
+              </mat-error>
+            </mat-form-field>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Profile Summary Cards -->
+      <div class="summary-cards">
+        
+        <!-- Experiences Summary -->
+        <mat-card class="summary-card" (click)="navigateToSection('experiences')">
+          <mat-card-content>
+            <div class="summary-content">
+              <div class="summary-icon experience">
+                <mat-icon>work</mat-icon>
+              </div>
+              <div class="summary-info">
+                <h3 class="summary-count">{{ profile?.experiences?.length || 0 }}</h3>
+                <p class="summary-label">Experiências</p>
+                <p class="summary-hint" *ngIf="(profile?.experiences?.length || 0) === 0">
+                  Adicione sua primeira experiência
+                </p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Skills Summary -->
+        <mat-card class="summary-card" (click)="navigateToSection('skills')">
+          <mat-card-content>
+            <div class="summary-content">
+              <div class="summary-icon skill">
+                <mat-icon>code</mat-icon>
+              </div>
+              <div class="summary-info">
+                <h3 class="summary-count">{{ profile?.skills?.length || 0 }}</h3>
+                <p class="summary-label">Habilidades</p>
+                <p class="summary-hint" *ngIf="(profile?.skills?.length || 0) === 0">
+                  Adicione suas habilidades
+                </p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Education Summary -->
+        <mat-card class="summary-card" (click)="navigateToSection('education')">
+          <mat-card-content>
+            <div class="summary-content">
+              <div class="summary-icon education">
+                <mat-icon>school</mat-icon>
+              </div>
+              <div class="summary-info">
+                <h3 class="summary-count">{{ profile?.educations?.length || 0 }}</h3>
+                <p class="summary-label">Formações</p>
+                <p class="summary-hint" *ngIf="(profile?.educations?.length || 0) === 0">
+                  Adicione sua formação
+                </p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Certifications Summary -->
+        <mat-card class="summary-card" (click)="navigateToSection('certifications')">
+          <mat-card-content>
+            <div class="summary-content">
+              <div class="summary-icon certification">
+                <mat-icon>card_membership</mat-icon>
+              </div>
+              <div class="summary-info">
+                <h3 class="summary-count">{{ profile?.certifications?.length || 0 }}</h3>
+                <p class="summary-label">Certificações</p>
+                <p class="summary-hint" *ngIf="(profile?.certifications?.length || 0) === 0">
+                  Adicione suas certificações
+                </p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Languages Summary -->
+        <mat-card class="summary-card" (click)="navigateToSection('languages')">
+          <mat-card-content>
+            <div class="summary-content">
+              <div class="summary-icon language">
+                <mat-icon>language</mat-icon>
+              </div>
+              <div class="summary-info">
+                <h3 class="summary-count">{{ profile?.languages?.length || 0 }}</h3>
+                <p class="summary-label">Idiomas</p>
+                <p class="summary-hint" *ngIf="(profile?.languages?.length || 0) === 0">
+                  Adicione seus idiomas
+                </p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Social Links Summary -->
+        <mat-card class="summary-card" (click)="navigateToSection('social')">
+          <mat-card-content>
+            <div class="summary-content">
+              <div class="summary-icon social">
+                <mat-icon>share</mat-icon>
+              </div>
+              <div class="summary-info">
+                <h3 class="summary-count">{{ profile?.socialLinks?.length || 0 }}</h3>
+                <p class="summary-label">Redes Sociais</p>
+                <p class="summary-hint" *ngIf="(profile?.socialLinks?.length || 0) === 0">
+                  Adicione suas redes
+                </p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h3 class="actions-title">Ações Rápidas</h3>
+      <div class="actions-grid">
+        <button 
+          mat-stroked-button 
+          (click)="navigateToSection('experiences')"
+          class="action-button">
+          <mat-icon>add</mat-icon>
+          Nova Experiência
+        </button>
+        <button 
+          mat-stroked-button 
+          (click)="navigateToSection('skills')"
+          class="action-button">
+          <mat-icon>add</mat-icon>
+          Nova Habilidade
+        </button>
+        <button 
+          mat-stroked-button 
+          (click)="navigateToSection('education')"
+          class="action-button">
+          <mat-icon>add</mat-icon>
+          Nova Formação
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
