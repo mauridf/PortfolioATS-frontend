@@ -7,6 +7,7 @@ import { ExperiencesComponent } from './modules/experiences/experiences/experien
 import { ProfileComponent } from './modules/profile/profile/profile.component';
 import { SkillsComponent } from './modules/skills/skills/skills.component';
 import { EducationsComponent } from './modules/educations/educations/educations.component';
+import { CertificationsComponent } from './modules/certifications/certifications/certifications.component';
 import { AuthGuard } from './core/guard/auth.guard';
 
 const routes: Routes = [
@@ -23,7 +24,7 @@ const routes: Routes = [
       { path: 'experiences', component: ExperiencesComponent },
       { path: 'skills', component: SkillsComponent },
       { path: 'education', component: EducationsComponent },
-      { path: 'certifications', component: DashboardComponent }, // Temporário
+      { path: 'certifications', component: CertificationsComponent },
       { path: 'languages', component: DashboardComponent } // Temporário
     ]
   },
