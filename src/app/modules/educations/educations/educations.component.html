@@ -1,0 +1,266 @@
+<div class="educations-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon class="title-icon">school</mat-icon>
+          Formações Acadêmicas
+        </h1>
+        <p class="page-subtitle">Gerencie sua trajetória educacional</p>
+      </div>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="openCreateModal(educationModal)"
+        class="add-button">
+        <mat-icon>add</mat-icon>
+        Nova Formação
+      </button>
+    </div>
+  </div>
+
+  <!-- Degree Stats -->
+  <div class="degree-stats" *ngIf="getDegreeStats().length > 0">
+    <h3 class="stats-title">Distribuição por Grau</h3>
+    <div class="stats-grid">
+      <div 
+        *ngFor="let stat of getDegreeStats()" 
+        class="stat-item"
+        (click)="onDegreeChange(stat.degree)"
+        [class.active]="selectedDegree === stat.degree">
+        <span class="stat-degree">{{ stat.degree }}</span>
+        <span class="stat-count">{{ stat.count }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Pesquisar formações</mat-label>
+        <input 
+          matInput 
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Digite para pesquisar...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="degree-field">
+        <mat-label>Filtrar por grau</mat-label>
+        <mat-select 
+          [value]="selectedDegree" 
+          (selectionChange)="onDegreeChange($event.value)">
+          <mat-option value="all">Todos os graus</mat-option>
+          <mat-option 
+            *ngFor="let degree of degrees" 
+            [value]="degree">
+            {{ degree }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
+    <div class="stats-badge" *ngIf="!loading">
+      <span class="stat-count">{{ filteredEducations.length }}</span>
+      <span class="stat-label">formação(ões)</span>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns"
+    [data]="filteredEducations"
+    [loading]="loading"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [totalItems]="filteredEducations.length"
+    (edit)="openEditModal(educationModal, $event)"
+    (delete)="confirmDelete($event)"
+    class="educations-table">
+    
+    <!-- Custom templates CORRIGIDOS -->
+    <ng-container *ngTemplateOutlet="degreeCell"></ng-container>
+    <ng-container *ngTemplateOutlet="periodCell"></ng-container>
+    <ng-container *ngTemplateOutlet="statusCell"></ng-container>
+  </app-data-table>
+
+  <!-- Custom Cell Templates -->
+  <ng-template #degreeCell let-education>
+    <span 
+      *ngIf="education?.degree"
+      class="degree-badge" 
+      [style.background]="getDegreeColor(education.degree)">
+      {{ education.degree }}
+    </span>
+    <span *ngIf="!education?.degree" class="degree-badge unknown">
+      Não informado
+    </span>
+  </ng-template>
+
+  <ng-template #periodCell let-education>
+    <div class="period-container">
+      <mat-icon class="period-icon">calendar_today</mat-icon>
+      <span class="period-text">{{ getPeriodDisplay(education) }}</span>
+    </div>
+  </ng-template>
+
+  <ng-template #statusCell let-education>
+    <div class="status-container">
+      <mat-icon 
+        class="status-icon"
+        [style.color]="getStatusColor(education?.isCompleted)">
+        {{ getStatusIcon(education?.isCompleted) }}
+      </mat-icon>
+      <span 
+        class="status-badge" 
+        [style.background]="getStatusColor(education?.isCompleted)">
+        {{ education?.isCompleted ? 'Concluído' : 'Em Andamento' }}
+      </span>
+    </div>
+  </ng-template>
+
+  <!-- Education Modal -->
+  <ng-template #educationModal>
+    <div class="modal-header">
+      <h2 mat-dialog-title>
+        <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Editar' : 'Nova' }} Formação
+      </h2>
+      <button mat-icon-button mat-dialog-close class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <mat-dialog-content>
+      <form [formGroup]="educationForm" class="education-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Instituição *</mat-label>
+          <input 
+            matInput 
+            formControlName="institution" 
+            placeholder="Ex: Universidade Federal, SENAI, Coursera...">
+          <mat-icon matSuffix>account_balance</mat-icon>
+          <mat-error *ngIf="educationForm.get('institution')?.hasError('required')">
+            Instituição é obrigatória
+          </mat-error>
+          <mat-error *ngIf="educationForm.get('institution')?.hasError('minlength')">
+            Mínimo 2 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Grau *</mat-label>
+            <mat-select formControlName="degree">
+              <mat-option *ngFor="let degree of degrees" [value]="degree">
+                {{ degree }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="educationForm.get('degree')?.hasError('required')">
+              Grau é obrigatório
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Área de Estudo *</mat-label>
+            <input 
+              matInput 
+              formControlName="fieldOfStudy" 
+              placeholder="Ex: Ciência da Computação...">
+            <mat-error *ngIf="educationForm.get('fieldOfStudy')?.hasError('required')">
+              Área de estudo é obrigatória
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Data de Início *</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+            <mat-error *ngIf="educationForm.get('startDate')?.hasError('required')">
+              Data de início é obrigatória
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field" *ngIf="educationForm.get('isCompleted')?.value">
+            <mat-label>Data de Conclusão *</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+            <mat-error *ngIf="educationForm.get('endDate')?.hasError('required')">
+              Data de conclusão é obrigatória para formações concluídas
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-checkbox">
+          <mat-checkbox formControlName="isCompleted" (change)="onCompletedChange()">
+            Formação concluída
+          </mat-checkbox>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descrição</mat-label>
+          <textarea 
+            matInput 
+            formControlName="description" 
+            placeholder="Descreva atividades relevantes, disciplinas, projetos..."
+            rows="3">
+          </textarea>
+        </mat-form-field>
+
+        <!-- Preview da formação -->
+        <div class="education-preview" *ngIf="educationForm.get('institution')?.value && educationForm.get('fieldOfStudy')?.value">
+          <h4 class="preview-title">Preview:</h4>
+          <div class="preview-content">
+            <div class="preview-header">
+              <h5 class="preview-institution">{{ educationForm.get('institution')?.value }}</h5>
+              <span 
+                *ngIf="educationForm.get('degree')?.value"
+                class="degree-badge preview-badge" 
+                [style.background]="getDegreeColor(educationForm.get('degree')?.value)">
+                {{ educationForm.get('degree')?.value }}
+              </span>
+            </div>
+            <p class="preview-field">{{ educationForm.get('fieldOfStudy')?.value }}</p>
+            <div class="preview-dates">
+              <mat-icon class="preview-icon">calendar_today</mat-icon>
+              <span class="preview-period">
+                {{ educationForm.get('startDate')?.value | date:'yyyy' }} - 
+                {{ educationForm.get('isCompleted')?.value ? (educationForm.get('endDate')?.value | date:'yyyy') : 'Presente' }}
+              </span>
+              <span 
+                class="status-badge preview-badge" 
+                [style.background]="getStatusColor(educationForm.get('isCompleted')?.value)">
+                <mat-icon class="preview-icon">{{ getStatusIcon(educationForm.get('isCompleted')?.value) }}</mat-icon>
+                {{ educationForm.get('isCompleted')?.value ? 'Concluído' : 'Em Andamento' }}
+              </span>
+            </div>
+            <p class="preview-description" *ngIf="educationForm.get('description')?.value">
+              {{ educationForm.get('description')?.value }}
+            </p>
+          </div>
+        </div>
+      </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="saveEducation()"
+        [disabled]="!educationForm.valid"
+        class="save-button">
+        <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Atualizar' : 'Criar' }} Formação
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
+</div>

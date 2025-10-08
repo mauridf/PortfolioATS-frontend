@@ -6,6 +6,7 @@ import { LayoutComponent } from './components/layout/layout.component';
 import { ExperiencesComponent } from './modules/experiences/experiences/experiences.component';
 import { ProfileComponent } from './modules/profile/profile/profile.component';
 import { SkillsComponent } from './modules/skills/skills/skills.component';
+import { EducationsComponent } from './modules/educations/educations/educations.component';
 import { AuthGuard } from './core/guard/auth.guard';
 
 const routes: Routes = [
@@ -21,7 +22,7 @@ const routes: Routes = [
       { path: 'profile', component: ProfileComponent },
       { path: 'experiences', component: ExperiencesComponent },
       { path: 'skills', component: SkillsComponent },
-      { path: 'education', component: DashboardComponent }, // Temporário
+      { path: 'education', component: EducationsComponent },
       { path: 'certifications', component: DashboardComponent }, // Temporário
       { path: 'languages', component: DashboardComponent } // Temporário
     ]

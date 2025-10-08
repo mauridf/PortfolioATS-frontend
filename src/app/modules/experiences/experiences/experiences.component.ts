@@ -3,9 +3,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 
 import { ExperienceService } from 'src/app/core/service/experience.service';
 import { Experience, ExperienceRequest } from '../../../models/experience.model';
+import { Skill } from '../../../models/skill.model';
 import { ColumnDefinition } from 'src/app/shared/data-table/data-table.component';
 
 @Component({
@@ -19,13 +21,18 @@ export class ExperiencesComponent implements OnInit {
   loading = false;
   searchTerm = '';
 
+  // Skills disponíveis
+  availableSkills: Skill[] = [];
+  selectedSkillIds: string[] = [];
+
   // Table configuration
   columns: ColumnDefinition[] = [
-    { key: 'company', header: 'Empresa', sortable: true, width: '200px' },
-    { key: 'position', header: 'Cargo', sortable: true, width: '200px' },
-    { key: 'employmentType', header: 'Tipo', sortable: true, width: '120px' },
-    { key: 'startDate', header: 'Início', type: 'date', sortable: true, width: '120px' },
-    { key: 'endDate', header: 'Término', type: 'date', sortable: true, width: '120px' },
+    { key: 'company', header: 'Empresa', sortable: true, width: '180px' },
+    { key: 'position', header: 'Cargo', sortable: true, width: '180px' },
+    { key: 'employmentType', header: 'Tipo', sortable: true, width: '100px' },
+    { key: 'skills', header: 'Habilidades', sortable: false, width: '150px' },
+    { key: 'startDate', header: 'Início', type: 'date', sortable: true, width: '100px' },
+    { key: 'endDate', header: 'Término', type: 'date', sortable: true, width: '100px' },
     { key: 'isCurrent', header: 'Atual', type: 'boolean', sortable: true, width: '80px' }
   ];
 
@@ -52,13 +59,15 @@ export class ExperiencesComponent implements OnInit {
     private experienceService: ExperienceService,
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {
     this.experienceForm = this.createExperienceForm();
   }
 
   ngOnInit(): void {
     this.loadExperiences();
+    this.loadAvailableSkills();
   }
 
   createExperienceForm(): FormGroup {
@@ -79,35 +88,59 @@ export class ExperiencesComponent implements OnInit {
     this.experienceService.getAllExperiences().subscribe({
       next: (data) => {
         this.experiences = data || [];
-        this.filteredExperiences = [...this.experiences];
+        this.filteredExperiences = data;
         this.loading = false;
       },
       error: (error) => {
         console.error('Error loading experiences:', error);
         this.snackBar.open('Erro ao carregar experiências', 'Fechar', { duration: 5000 });
-        this.experiences = [];
-        this.filteredExperiences = [];
         this.loading = false;
       }
     });
   }
 
+  loadAvailableSkills(): void {
+    this.experienceService.getAvailableSkills().subscribe({
+      next: (skills) => {
+        this.availableSkills = skills || [];
+      },
+      error: (error) => {
+        console.error('Error loading skills:', error);
+        this.availableSkills = [];
+        
+        // Fallback: tenta carregar do perfil se disponível
+        this.loadSkillsFromProfile();
+      }
+    });
+  }
+
+  // Método fallback para carregar skills do perfil
+  private loadSkillsFromProfile(): void {
+    // Você pode implementar um serviço para carregar o perfil completo
+    // ou usar um ProfileService se disponível
+    console.log('Tentando carregar skills do perfil...');
+    // Implementação depende da sua estrutura de serviços
+  }
+
   onSearchChange(searchTerm: string): void {
     this.searchTerm = searchTerm;
-    if (!this.experiences || this.experiences.length === 0) {
-      this.filteredExperiences = [];
-      return;
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    let filtered = this.experiences;
+
+    // Aplicar filtro de pesquisa
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(exp =>
+        exp.company?.toLowerCase().includes(term) ||
+        exp.position?.toLowerCase().includes(term) ||
+        exp.employmentType?.toLowerCase().includes(term)
+      );
     }
-    
-    this.filteredExperiences = this.experiences.filter(exp => {
-      if (!exp) return false;
-      
-      const companyMatch = exp.company?.toLowerCase().includes(this.searchTerm.toLowerCase()) || false;
-      const positionMatch = exp.position?.toLowerCase().includes(this.searchTerm.toLowerCase()) || false;
-      const typeMatch = exp.employmentType?.toLowerCase().includes(this.searchTerm.toLowerCase()) || false;
-      
-      return companyMatch || positionMatch || typeMatch;
-    });
+
+    this.filteredExperiences = filtered;
     this.pageIndex = 0;
   }
 
@@ -119,7 +152,11 @@ export class ExperiencesComponent implements OnInit {
   openCreateModal(template: TemplateRef<any>): void {
     this.isEditMode = false;
     this.selectedExperience = null;
-    this.experienceForm.reset({ isCurrent: false, skillIds: [] });
+    this.selectedSkillIds = [];
+    this.experienceForm.reset({ 
+      isCurrent: false, 
+      skillIds: [] 
+    });
     
     const dialogRef = this.dialog.open(template, {
       width: '600px',
@@ -129,12 +166,14 @@ export class ExperiencesComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(() => {
       this.experienceForm.reset({ isCurrent: false, skillIds: [] });
+      this.selectedSkillIds = [];
     });
   }
 
   openEditModal(template: TemplateRef<any>, experience: Experience): void {
     this.isEditMode = true;
     this.selectedExperience = experience;
+    this.selectedSkillIds = experience.skillIds || [];
     
     // Format dates for form
     const startDate = new Date(experience.startDate);
@@ -159,7 +198,55 @@ export class ExperiencesComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(() => {
       this.experienceForm.reset({ isCurrent: false, skillIds: [] });
+      this.selectedSkillIds = [];
     });
+  }
+
+  onSkillSelectionChange(skillId: string, event: any): void {
+    const isChecked = event.checked;
+    
+    if (isChecked) {
+      // Adicionar skill se não estiver na lista
+      if (!this.selectedSkillIds.includes(skillId)) {
+        this.selectedSkillIds.push(skillId);
+      }
+    } else {
+      // Remover skill da lista
+      this.selectedSkillIds = this.selectedSkillIds.filter(id => id !== skillId);
+    }
+    
+    // Atualizar o form control
+    this.experienceForm.patchValue({
+      skillIds: this.selectedSkillIds
+    });
+  }
+
+  isSkillSelected(skillId: string): boolean {
+    return this.selectedSkillIds.includes(skillId);
+  }
+
+  getSelectedSkills(): Skill[] {
+    return this.availableSkills.filter(skill => 
+      this.selectedSkillIds.includes(skill.id)
+    );
+  }
+
+  removeSkill(skillId: string): void {
+    this.selectedSkillIds = this.selectedSkillIds.filter(id => id !== skillId);
+    this.experienceForm.patchValue({
+      skillIds: this.selectedSkillIds
+    });
+  }
+
+  getSkillByName(skillId: string): Skill | undefined {
+    return this.availableSkills.find(skill => skill.id === skillId);
+  }
+
+  // Método para navegar para a tela de skills
+  onNavigateToSkills(event: Event): void {
+    event.preventDefault();
+    this.dialog.closeAll();
+    this.router.navigate(['/skills']);
   }
 
   onIsCurrentChange(): void {
@@ -230,16 +317,7 @@ export class ExperiencesComponent implements OnInit {
     }
   }
 
-  private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
-      const control = formGroup.get(key);
-      control?.markAsTouched();
-    });
-  }
-
   getEmploymentTypeColor(type: string): string {
-    if (!type) return '#757575';
-    
     const colors: { [key: string]: string } = {
       'CLT': '#4CAF50',
       'PJ': '#2196F3',
@@ -249,5 +327,57 @@ export class ExperiencesComponent implements OnInit {
       'Voluntário': '#607D8B'
     };
     return colors[type] || '#757575';
+  }
+
+  getCategoryColor(category: string | undefined): string {
+    if (!category) return '#757575';
+    
+    const colors: { [key: string]: string } = {
+      'Backend': '#4CAF50',
+      'Frontend': '#2196F3',
+      'Banco de Dados': '#FF9800',
+      'Cloud & DevOps': '#9C27B0',
+      'Arquitetura & Padrões': '#E91E63',
+      'Ferramentas & Outras Tecnologias': '#607D8B',
+      'Mobile': '#00BCD4',
+      'Testes & QA': '#FF5722',
+      'Segurança': '#795548',
+      'Business & Soft Skills': '#3F51B5',
+      'Sistemas Legados Desktop & Client-Server': '#8B4513'
+    };
+    return colors[category] || '#757575';
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  getSkillsForExperience(experience: Experience): Skill[] {
+    if (!experience || !experience.skillIds || experience.skillIds.length === 0) {
+      return [];
+    }
+    
+    // Se já tem skills populadas, retorna elas
+    if (experience.skills && experience.skills.length > 0) {
+      return experience.skills;
+    }
+    
+    // Caso contrário, mapeia os skillIds para as skills do perfil
+    return experience.skillIds
+      .map(skillId => this.getSkillById(skillId))
+      .filter(skill => skill !== undefined) as Skill[];
+  }
+
+  getSkillById(skillId: string): Skill | undefined {
+    // Primeiro busca nas skills disponíveis (do modal)
+    const availableSkill = this.availableSkills.find(skill => skill.id === skillId);
+    if (availableSkill) return availableSkill;
+    
+    // Se não encontrar, busca nas skills do perfil (se estiverem carregadas)
+    // Você pode precisar carregar as skills do perfil separadamente
+    return undefined;
   }
 }

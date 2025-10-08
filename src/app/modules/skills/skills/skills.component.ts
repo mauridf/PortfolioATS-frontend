@@ -47,7 +47,8 @@ export class SkillsComponent implements OnInit {
     'Mobile',
     'Testes & QA',
     'Segurança',
-    'Business & Soft Skills'
+    'Business & Soft Skills',
+    'Sistemas Legados Desktop & Client-Server'
   ];
 
   // Níveis de habilidade
@@ -256,7 +257,7 @@ export class SkillsComponent implements OnInit {
   getCategoryColor(category: string): string {
     const colors: { [key: string]: string } = {
       'Backend': '#4CAF50',
-      'Frontend': '#2196F3',
+      'Frontend': '#2196F3', 
       'Banco de Dados': '#FF9800',
       'Cloud & DevOps': '#9C27B0',
       'Arquitetura & Padrões': '#E91E63',
@@ -264,7 +265,8 @@ export class SkillsComponent implements OnInit {
       'Mobile': '#00BCD4',
       'Testes & QA': '#FF5722',
       'Segurança': '#795548',
-      'Business & Soft Skills': '#3F51B5'
+      'Business & Soft Skills': '#3F51B5',
+      'Sistemas Legados Desktop & Client-Server': '#8B4513'
     };
     return colors[category] || '#757575';
   }

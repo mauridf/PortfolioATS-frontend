@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Experience, ExperienceRequest } from '../../models/experience.model';
 import { AuthService } from './auth.service';
+import { Skill } from '../../models/skill.model';
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +56,13 @@ export class ExperienceService {
 
   deleteExperience(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/Experiences/${id}`, {
+      headers: this.getHeaders()
+    });
+  }
+
+  getAvailableSkills(): Observable<Skill[]> {
+    // Podemos usar o SkillService ou fazer uma requisição direta
+    return this.http.get<Skill[]>(`${this.apiUrl}/Skills`, {
       headers: this.getHeaders()
     });
   }

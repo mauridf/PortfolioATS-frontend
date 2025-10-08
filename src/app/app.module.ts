@@ -10,6 +10,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './modules/shared/shared.module';
 import { ExperiencesModule } from './modules/experiences/experiences.module';
 import { SkillsModule } from './modules/skills/skills.module';
+import { ProfileModule } from './modules/profile/profile.module';
+import { EducationsModule } from './modules/educations/educations.module';
 import { MaterialModule } from './modules/shared/material.module';
 
 // Components
@@ -22,7 +24,6 @@ import { LayoutComponent } from './components/layout/layout.component';
 
 // Services and Interceptors
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
-import { ProfileComponent } from './modules/profile/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -32,8 +33,7 @@ import { ProfileComponent } from './modules/profile/profile/profile.component';
     DashboardComponent,
     HeaderComponent,
     SidenavComponent,
-    LayoutComponent,
-    ProfileComponent
+    LayoutComponent
   ],
   imports: [
     BrowserModule,
@@ -46,6 +46,8 @@ import { ProfileComponent } from './modules/profile/profile/profile.component';
     SharedModule,
     ExperiencesModule,
     SkillsModule,
+    ProfileModule,
+    EducationsModule,
     MaterialModule
   ],
   providers: [

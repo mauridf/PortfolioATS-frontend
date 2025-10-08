@@ -247,3 +247,217 @@ mat-dialog-actions {
   background: #bdc3c7 !important;
   color: #2c3e50;
 }
+
+// Skills Section Styles
+.skills-section {
+  margin-top: 24px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+  
+  .section-label {
+    display: block;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+  }
+  
+  .selected-skills {
+    margin-bottom: 20px;
+    
+    .selected-skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      
+      .selected-skill-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 16px;
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 500;
+        
+        .skill-name {
+          font-size: 0.75rem;
+        }
+        
+        .remove-skill-button {
+          width: 20px;
+          height: 20px;
+          line-height: 20px;
+          
+          mat-icon {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+            color: white;
+          }
+          
+          &:hover {
+            background: rgba(255, 255, 255, 0.2);
+          }
+        }
+      }
+    }
+  }
+  
+  .skills-selection {
+    .skills-search-field {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    
+    .skills-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 8px;
+      background: white;
+      
+      .skill-item {
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        .skill-checkbox {
+          width: 100%;
+          
+          .skill-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            
+            .skill-name {
+              font-weight: 500;
+              color: #2c3e50;
+              min-width: 120px;
+            }
+            
+            .skill-category-badge {
+              padding: 2px 8px;
+              border-radius: 12px;
+              color: white;
+              font-size: 0.7rem;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            
+            .skill-level {
+              color: #7f8c8d;
+              font-size: 0.8rem;
+              font-style: italic;
+            }
+          }
+        }
+      }
+      
+      .no-skills-message {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px;
+        text-align: center;
+        color: #7f8c8d;
+        
+        mat-icon {
+          color: #bdc3c7;
+        }
+        
+        a {
+          color: #667eea;
+          text-decoration: none;
+          font-weight: 500;
+          
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Customização do checkbox para melhor visualização
+::ng-deep {
+  .skill-checkbox {
+    .mat-checkbox-layout {
+      width: 100%;
+    }
+    
+    .mat-checkbox-inner-container {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Scrollbar customizada para a lista de skills
+.skills-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.skills-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.skills-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.skills-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+// Skills in table
+.experience-skills {
+  .skills-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    
+    .skill-preview-badge {
+      padding: 2px 6px;
+      border-radius: 10px;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 60px;
+    }
+    
+    .more-skills-badge {
+      padding: 2px 6px;
+      border-radius: 10px;
+      background: #bdc3c7;
+      color: #2c3e50;
+      font-size: 0.65rem;
+      font-weight: 500;
+    }
+  }
+}
+
+.no-skills-text {
+  color: #bdc3c7;
+  font-style: italic;
+}
+
+// Adicionar para garantir que badges com cores indefinidas tenham um fallback
+.skill-preview-badge {
+  &:not([style*="background"]) {
+    background: #757575 !important;
+  }
+}

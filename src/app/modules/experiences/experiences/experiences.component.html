@@ -34,7 +34,7 @@
     </mat-form-field>
     
     <div class="stats-badge" *ngIf="!loading">
-      <span class="stat-count">{{ filteredExperiences?.length || 0 }}</span>
+      <span class="stat-count">{{ filteredExperiences.length || 0 }}</span>
       <span class="stat-label">experiência(s)</span>
     </div>
   </div>
@@ -54,6 +54,7 @@
     <!-- Custom template for employment type -->
     <ng-container *ngFor="let column of columns">
       <ng-container *ngIf="column.key === 'employmentType'" [ngTemplateOutlet]="employmentTypeCell"></ng-container>
+      <ng-container *ngIf="column.key === 'skills'" [ngTemplateOutlet]="skillsCell"></ng-container>
     </ng-container>
   </app-data-table>
 
@@ -67,6 +68,30 @@
     </span>
     <span *ngIf="!experience?.employmentType" class="employment-type-badge unknown">
       Não informado
+    </span>
+  </ng-template>
+
+  <!-- Custom template for skills in table -->
+  <ng-template #skillsCell let-experience>
+    <div class="experience-skills" *ngIf="getSkillsForExperience(experience).length > 0">
+      <div class="skills-preview">
+        <span 
+          *ngFor="let skill of getSkillsForExperience(experience).slice(0, 2)" 
+          class="skill-preview-badge"
+          [style.background]="getCategoryColor(skill?.category)"
+          [matTooltip]="(skill?.name || '') + ' - ' + (skill?.level || '')">
+          {{ skill?.name }}
+        </span>
+        <span 
+          *ngIf="getSkillsForExperience(experience).length > 2" 
+          class="more-skills-badge"
+          matTooltip="+{{ getSkillsForExperience(experience).length - 2 }} habilidades">
+          +{{ getSkillsForExperience(experience).length - 2 }}
+        </span>
+      </div>
+    </div>
+    <span *ngIf="getSkillsForExperience(experience).length === 0" class="no-skills-text">
+      -
     </span>
   </ng-template>
 
@@ -162,10 +187,68 @@
           </mat-error>
         </mat-form-field>
 
-        <!-- Skills section (para implementação futura) -->
+        <!-- Skills Selection Section -->
         <div class="skills-section">
           <label class="section-label">Habilidades Utilizadas</label>
-          <p class="section-hint">Em breve: selecione as habilidades relacionadas a esta experiência</p>
+          
+          <!-- Selected Skills Preview -->
+          <div class="selected-skills" *ngIf="getSelectedSkills().length > 0">
+            <div class="selected-skills-list">
+              <div 
+                *ngFor="let skill of getSelectedSkills()" 
+                class="selected-skill-badge"
+                [style.background]="getCategoryColor(skill.category)">
+                <span class="skill-name">{{ skill.name }}</span>
+                <button 
+                  mat-icon-button 
+                  class="remove-skill-button"
+                  (click)="removeSkill(skill.id)">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills Search and Selection -->
+          <div class="skills-selection">
+            <mat-form-field appearance="outline" class="skills-search-field">
+              <mat-label>Pesquisar habilidades</mat-label>
+              <input 
+                matInput 
+                #skillsSearch
+                placeholder="Digite para filtrar habilidades...">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <div class="skills-list">
+              <div 
+                *ngFor="let skill of availableSkills" 
+                class="skill-item">
+                <mat-checkbox
+                  [checked]="isSkillSelected(skill.id)"
+                  (change)="onSkillSelectionChange(skill.id, $event)"
+                  color="primary"
+                  class="skill-checkbox">
+                  <div class="skill-info">
+                    <span class="skill-name">{{ skill.name }}</span>
+                    <span 
+                      class="skill-category-badge"
+                      [style.background]="getCategoryColor(skill.category)">
+                      {{ skill.category }}
+                    </span>
+                    <span class="skill-level">{{ skill.level }}</span>
+                  </div>
+                </mat-checkbox>
+              </div>
+
+              <div *ngIf="availableSkills.length === 0" class="no-skills-message">
+                <mat-icon>info</mat-icon>
+                <p>Nenhuma habilidade cadastrada. 
+                  <a routerLink="/skills" (click)="onNavigateToSkills($event)">Cadastre habilidades primeiro</a>.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </form>
     </mat-dialog-content>
