@@ -1,0 +1,220 @@
+<div class="languages-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon class="title-icon">language</mat-icon>
+          Idiomas
+        </h1>
+        <p class="page-subtitle">Gerencie seus conhecimentos linguísticos</p>
+      </div>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="openCreateModal(languageModal)"
+        class="add-button">
+        <mat-icon>add</mat-icon>
+        Novo Idioma
+      </button>
+    </div>
+  </div>
+
+  <!-- Proficiency Stats -->
+  <div class="proficiency-stats" *ngIf="getProficiencyStats().length > 0">
+    <h3 class="stats-title">Distribuição por Proficiência</h3>
+    <div class="stats-grid">
+      <div 
+        *ngFor="let stat of getProficiencyStats()" 
+        class="stat-item"
+        (click)="onProficiencyChange(stat.proficiency)"
+        [class.active]="selectedProficiency === stat.proficiency">
+        <div class="stat-color" [style.background]="getProficiencyColor(stat.proficiency)"></div>
+        <span class="stat-proficiency">{{ stat.proficiency }}</span>
+        <span class="stat-count">{{ stat.count }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Pesquisar idiomas</mat-label>
+        <input 
+          matInput 
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Digite para pesquisar...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="proficiency-field">
+        <mat-label>Filtrar por proficiência</mat-label>
+        <mat-select 
+          [value]="selectedProficiency" 
+          (selectionChange)="onProficiencyChange($event.value)">
+          <mat-option value="all">Todas as proficiências</mat-option>
+          <mat-option 
+            *ngFor="let proficiency of proficiencies" 
+            [value]="proficiency">
+            {{ proficiency }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
+    <div class="stats-badge" *ngIf="!loading">
+      <span class="stat-count">{{ filteredLanguages.length }}</span>
+      <span class="stat-label">idioma(s)</span>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns"
+    [data]="filteredLanguages"
+    [loading]="loading"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [totalItems]="filteredLanguages.length"
+    (edit)="openEditModal(languageModal, $event)"
+    (delete)="confirmDelete($event)"
+    class="languages-table">
+    
+    <!-- Custom templates -->
+    <ng-container *ngTemplateOutlet="proficiencyCell"></ng-container>
+    <ng-container *ngTemplateOutlet="levelCell"></ng-container>
+  </app-data-table>
+
+  <!-- Custom Cell Templates -->
+  <ng-template #proficiencyCell let-language>
+    <div class="proficiency-container" *ngIf="language">
+      <mat-icon 
+        class="proficiency-icon"
+        [style.color]="getProficiencyColor(language.proficiency)">
+        {{ getProficiencyIcon(language.proficiency) }}
+      </mat-icon>
+      <span 
+        class="proficiency-badge" 
+        [style.background]="getProficiencyColor(language.proficiency)">
+        {{ language.proficiency }}
+      </span>
+    </div>
+    <div class="proficiency-container" *ngIf="!language">
+      <span class="proficiency-badge unknown">
+        Não informado
+      </span>
+    </div>
+  </ng-template>
+
+  <ng-template #levelCell let-language>
+    <div class="level-container" *ngIf="language">
+      <div class="level-info">
+        <span class="level-text">{{ language.proficiency }}</span>
+        <span class="level-percentage">{{ getProficiencyLevel(language.proficiency) }}%</span>
+      </div>
+      <mat-progress-bar
+        class="level-progress"
+        [value]="getProficiencyLevel(language.proficiency)"
+        [color]="getProficiencyColor(language.proficiency) === '#F44336' ? 'warn' : 
+                getProficiencyColor(language.proficiency) === '#FF9800' ? 'accent' : 'primary'">
+      </mat-progress-bar>
+    </div>
+    <div class="level-container" *ngIf="!language">
+      <span class="level-text unknown">Nível não informado</span>
+    </div>
+  </ng-template>
+
+  <!-- Language Modal -->
+  <ng-template #languageModal>
+    <div class="modal-header">
+      <h2 mat-dialog-title>
+        <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Editar' : 'Novo' }} Idioma
+      </h2>
+      <button mat-icon-button mat-dialog-close class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <mat-dialog-content>
+      <form [formGroup]="languageForm" class="language-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Idioma *</mat-label>
+          <input 
+            matInput 
+            formControlName="name" 
+            placeholder="Ex: Inglês, Espanhol, Francês...">
+          <mat-icon matSuffix>translate</mat-icon>
+          <mat-error *ngIf="languageForm.get('name')?.hasError('required')">
+            Nome do idioma é obrigatório
+          </mat-error>
+          <mat-error *ngIf="languageForm.get('name')?.hasError('minlength')">
+            Mínimo 2 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Proficiência *</mat-label>
+          <mat-select formControlName="proficiency">
+            <mat-option *ngFor="let proficiency of proficiencies" [value]="proficiency">
+              {{ proficiency }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="languageForm.get('proficiency')?.hasError('required')">
+            Proficiência é obrigatória
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Preview do idioma -->
+        <div class="language-preview" *ngIf="languageForm.get('name')?.value && languageForm.get('proficiency')?.value">
+          <h4 class="preview-title">Preview:</h4>
+          <div class="preview-content">
+            <div class="preview-header">
+              <h5 class="preview-name">{{ languageForm.get('name')?.value }}</h5>
+              <div class="preview-proficiency">
+                <mat-icon 
+                  class="preview-icon"
+                  [style.color]="getProficiencyColor(languageForm.get('proficiency')?.value)">
+                  {{ getProficiencyIcon(languageForm.get('proficiency')?.value) }}
+                </mat-icon>
+                <span 
+                  class="proficiency-badge preview-badge" 
+                  [style.background]="getProficiencyColor(languageForm.get('proficiency')?.value)">
+                  {{ languageForm.get('proficiency')?.value }}
+                </span>
+              </div>
+            </div>
+            <div class="preview-level">
+              <div class="level-info">
+                <span class="level-text">{{ languageForm.get('proficiency')?.value }}</span>
+                <span class="level-percentage">{{ getProficiencyLevel(languageForm.get('proficiency')?.value) }}%</span>
+              </div>
+              <mat-progress-bar
+                class="level-progress"
+                [value]="getProficiencyLevel(languageForm.get('proficiency')?.value)"
+                [color]="getProficiencyColor(languageForm.get('proficiency')?.value) === '#F44336' ? 'warn' : 
+                        getProficiencyColor(languageForm.get('proficiency')?.value) === '#FF9800' ? 'accent' : 'primary'">
+              </mat-progress-bar>
+            </div>
+          </div>
+        </div>
+      </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="saveLanguage()"
+        [disabled]="!languageForm.valid"
+        class="save-button">
+        <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Atualizar' : 'Criar' }} Idioma
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
+</div>

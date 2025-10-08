@@ -13,6 +13,7 @@ import { SkillsModule } from './modules/skills/skills.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { EducationsModule } from './modules/educations/educations.module';
 import { CertificationsModule } from './modules/certifications/certifications.module';
+import { LanguagesModule } from './modules/languages/languages.module';
 import { MaterialModule } from './modules/shared/material.module';
 
 // Components
@@ -50,6 +51,7 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
     ProfileModule,
     EducationsModule,
     CertificationsModule,
+    LanguagesModule,
     MaterialModule
   ],
   providers: [
