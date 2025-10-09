@@ -21,6 +21,16 @@
         
         <div class="header-actions">
           <button 
+            mat-raised-button 
+            color="accent" 
+            (click)="generatePdf()"
+            [disabled]="generatingPdf"
+            class="pdf-button">
+            <mat-icon>{{ generatingPdf ? 'hourglass_empty' : 'picture_as_pdf' }}</mat-icon>
+            {{ generatingPdf ? 'Gerando...' : 'Gerar Currículo PDF' }}
+          </button>
+          
+          <button 
             *ngIf="!editing"
             mat-raised-button 
             color="primary" 

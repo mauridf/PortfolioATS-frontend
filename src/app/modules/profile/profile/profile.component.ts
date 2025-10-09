@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ProfileService } from '../../../core/service/profile.service';
 import { Profile, ProfileRequest } from '../../../models/profile.model';
+import { PdfService } from 'src/app/core/service/pdf.service';
 
 @Component({
   selector: 'app-profile',
@@ -15,6 +16,7 @@ export class ProfileComponent implements OnInit {
   loading = false;
   editing = false;
   profileForm: FormGroup;
+  generatingPdf = false;
 
   // Estatísticas
   profileCompleteness = 0;
@@ -22,6 +24,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private profileService: ProfileService,
+    private pdfService: PdfService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private router: Router
@@ -128,6 +131,20 @@ export class ProfileComponent implements OnInit {
     return 'Perfil Incompleto';
   }
 
+  // NOVO MÉTODO PARA GERAR PDF
+  async generatePdf(): Promise<void> {
+    this.generatingPdf = true;
+    try {
+      await this.pdfService.generateATSCV();
+      this.snackBar.open('Currículo gerado com sucesso!', 'Fechar', { duration: 3000 });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      this.snackBar.open('Erro ao gerar currículo', 'Fechar', { duration: 5000 });
+    } finally {
+      this.generatingPdf = false;
+    }
+  }
+  
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach(key => {
       const control = formGroup.get(key);

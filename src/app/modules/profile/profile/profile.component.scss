@@ -391,3 +391,98 @@
     }
   }
 }
+
+.profile-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 32px;
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .title-section {
+      .page-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 2rem;
+        font-weight: 700;
+        
+        .title-icon {
+          color: #667eea;
+          font-size: 2rem;
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+      
+      .page-subtitle {
+        color: #7f8c8d;
+        margin: 0;
+        font-size: 1.1rem;
+      }
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      
+      @media (max-width: 768px) {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .pdf-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+        color: white;
+        
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+        }
+        
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+      
+      .save-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+      }
+    }
+  }
+}
