@@ -14,6 +14,7 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { EducationsModule } from './modules/educations/educations.module';
 import { CertificationsModule } from './modules/certifications/certifications.module';
 import { LanguagesModule } from './modules/languages/languages.module';
+import { SocialLinksModule } from './modules/social-links/social-links.module';
 import { MaterialModule } from './modules/shared/material.module';
 
 // Components
@@ -52,6 +53,7 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
     EducationsModule,
     CertificationsModule,
     LanguagesModule,
+    SocialLinksModule,
     MaterialModule
   ],
   providers: [

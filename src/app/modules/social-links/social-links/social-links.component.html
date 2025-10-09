@@ -1,0 +1,231 @@
+<div class="social-links-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon class="title-icon">share</mat-icon>
+          Redes Sociais
+        </h1>
+        <p class="page-subtitle">Gerencie seus links e redes sociais</p>
+      </div>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="openCreateModal(socialLinkModal)"
+        class="add-button">
+        <mat-icon>add</mat-icon>
+        Nova Rede Social
+      </button>
+    </div>
+  </div>
+
+  <!-- Platform Stats -->
+  <div class="platform-stats" *ngIf="getPlatformStats().length > 0">
+    <h3 class="stats-title">Distribuição por Plataforma</h3>
+    <div class="stats-grid">
+      <div 
+        *ngFor="let stat of getPlatformStats()" 
+        class="stat-item"
+        (click)="onPlatformChange(stat.platform)"
+        [class.active]="selectedPlatform === stat.platform">
+        <div class="stat-color" [style.background]="getPlatformColor(stat.platform)"></div>
+        <span class="stat-platform">{{ stat.platform }}</span>
+        <span class="stat-count">{{ stat.count }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Pesquisar redes sociais</mat-label>
+        <input 
+          matInput 
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Digite para pesquisar...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="platform-field">
+        <mat-label>Filtrar por plataforma</mat-label>
+        <mat-select 
+          [value]="selectedPlatform" 
+          (selectionChange)="onPlatformChange($event.value)">
+          <mat-option value="all">Todas as plataformas</mat-option>
+          <mat-option 
+            *ngFor="let platform of platforms" 
+            [value]="platform">
+            {{ platform }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
+    <div class="stats-badge" *ngIf="!loading">
+      <span class="stat-count">{{ filteredSocialLinks.length }}</span>
+      <span class="stat-label">rede(s) social(is)</span>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <app-data-table
+    [columns]="columns"
+    [data]="filteredSocialLinks"
+    [loading]="loading"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [totalItems]="filteredSocialLinks.length"
+    (edit)="openEditModal(socialLinkModal, $event)"
+    (delete)="confirmDelete($event)"
+    class="social-links-table">
+    
+    <!-- Custom templates - REMOVIDO O TEMPLATE actionsCell -->
+    <ng-container *ngTemplateOutlet="platformCell"></ng-container>
+    <ng-container *ngTemplateOutlet="urlCell"></ng-container>
+  </app-data-table>
+
+  <!-- Custom Cell Templates -->
+  <ng-template #platformCell let-link>
+    <div class="platform-container" *ngIf="link">
+      <mat-icon 
+        class="platform-icon"
+        [style.color]="getPlatformColor(link.platform)">
+        {{ getPlatformIcon(link.platform) }}
+      </mat-icon>
+      <span 
+        class="platform-badge" 
+        [style.background]="getPlatformColor(link.platform)">
+        {{ link.platform }}
+      </span>
+    </div>
+    <div class="platform-container" *ngIf="!link">
+      <span class="platform-badge unknown">
+        Não informado
+      </span>
+    </div>
+  </ng-template>
+
+  <ng-template #urlCell let-link>
+    <div class="url-container" *ngIf="link">
+      <a 
+        [href]="link.url" 
+        target="_blank" 
+        class="url-link"
+        (click)="$event.stopPropagation()">
+        <mat-icon class="url-icon">link</mat-icon>
+        {{ link.url }}
+      </a>
+      <span class="username" *ngIf="link.username">
+        @{{ link.username }}
+      </span>
+    </div>
+    <div class="url-container" *ngIf="!link">
+      <span class="url-text unknown">URL não informada</span>
+    </div>
+  </ng-template>
+
+  <!-- Social Link Modal -->
+  <ng-template #socialLinkModal>
+    <div class="modal-header">
+      <h2 mat-dialog-title>
+        <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Editar' : 'Nova' }} Rede Social
+      </h2>
+      <button mat-icon-button mat-dialog-close class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <mat-dialog-content>
+      <form [formGroup]="socialLinkForm" class="social-link-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Plataforma *</mat-label>
+          <mat-select formControlName="platform">
+            <mat-option *ngFor="let platform of platforms" [value]="platform">
+              {{ platform }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>public</mat-icon>
+          <mat-error *ngIf="socialLinkForm.get('platform')?.hasError('required')">
+            Plataforma é obrigatória
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>URL *</mat-label>
+          <input 
+            matInput 
+            formControlName="url" 
+            placeholder="https://...">
+          <mat-icon matSuffix>link</mat-icon>
+          <mat-error *ngIf="socialLinkForm.get('url')?.hasError('required')">
+            URL é obrigatória
+          </mat-error>
+          <mat-error *ngIf="socialLinkForm.get('url')?.hasError('pattern')">
+            URL deve começar com http:// ou https://
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome de usuário (opcional)</mat-label>
+          <input 
+            matInput 
+            formControlName="username" 
+            placeholder="Seu username na plataforma">
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+
+        <!-- Preview da rede social -->
+        <div class="social-link-preview" *ngIf="socialLinkForm.get('platform')?.value && socialLinkForm.get('url')?.value">
+          <h4 class="preview-title">Preview:</h4>
+          <div class="preview-content">
+            <div class="preview-header">
+              <div class="preview-platform">
+                <mat-icon 
+                  class="preview-icon"
+                  [style.color]="getPlatformColor(socialLinkForm.get('platform')?.value)">
+                  {{ getPlatformIcon(socialLinkForm.get('platform')?.value) }}
+                </mat-icon>
+                <span 
+                  class="platform-badge preview-badge" 
+                  [style.background]="getPlatformColor(socialLinkForm.get('platform')?.value)">
+                  {{ socialLinkForm.get('platform')?.value }}
+                </span>
+              </div>
+            </div>
+            <div class="preview-url">
+              <a 
+                [href]="socialLinkForm.get('url')?.value" 
+                target="_blank" 
+                class="preview-link">
+                <mat-icon class="preview-icon">link</mat-icon>
+                {{ socialLinkForm.get('url')?.value }}
+              </a>
+            </div>
+            <div class="preview-username" *ngIf="socialLinkForm.get('username')?.value">
+              <mat-icon class="preview-icon">person</mat-icon>
+              <span class="username-text">@{{ socialLinkForm.get('username')?.value }}</span>
+            </div>
+          </div>
+        </div>
+      </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="saveSocialLink()"
+        [disabled]="!socialLinkForm.valid"
+        class="save-button">
+        <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Atualizar' : 'Criar' }} Rede Social
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
+</div>

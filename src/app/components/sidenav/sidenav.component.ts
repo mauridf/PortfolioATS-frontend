@@ -17,7 +17,8 @@ export class SidenavComponent {
     { path: '/skills', icon: 'code', label: 'Habilidades' },
     { path: '/education', icon: 'school', label: 'Formação' },
     { path: '/certifications', icon: 'card_membership', label: 'Certificações' },
-    { path: '/languages', icon: 'language', label: 'Idiomas' }
+    { path: '/languages', icon: 'language', label: 'Idiomas' },
+    { path: '/social-links', icon: 'share', label: 'Redes Sociais' }
   ];
 
   constructor(

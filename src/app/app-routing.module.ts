@@ -9,6 +9,7 @@ import { SkillsComponent } from './modules/skills/skills/skills.component';
 import { EducationsComponent } from './modules/educations/educations/educations.component';
 import { CertificationsComponent } from './modules/certifications/certifications/certifications.component';
 import { LanguagesComponent } from './modules/languages/languages/languages.component';
+import { SocialLinksComponent } from './modules/social-links/social-links/social-links.component';
 import { AuthGuard } from './core/guard/auth.guard';
 
 const routes: Routes = [
@@ -26,7 +27,8 @@ const routes: Routes = [
       { path: 'skills', component: SkillsComponent },
       { path: 'education', component: EducationsComponent },
       { path: 'certifications', component: CertificationsComponent },
-      { path: 'languages', component: LanguagesComponent }
+      { path: 'languages', component: LanguagesComponent },
+      { path: 'social-links', component: SocialLinksComponent },
     ]
   },
   { path: '**', redirectTo: '/login' }
